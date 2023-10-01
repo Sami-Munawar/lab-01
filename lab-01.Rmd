@@ -1,10 +1,9 @@
 ---
 title: "Lab 01 - UK Attractions"
-author: "INSERT NAME HERE"
+author: "Muhammed Sami Munawar"
 date: "`r Sys.Date()`"
 output: html_document
 ---
-
 
 ### Load packages and data
 
@@ -17,8 +16,6 @@ library(tidyverse)
 # Do not edit this code chunk!
 visitors <- read_csv("data/UK-visitor-numbers.csv")
 ```
-
-
 
 # Wrangling Data
 
@@ -37,7 +34,8 @@ _Create a frequency table of the number of tourist attractions in the data set b
 ```{r Ex_a}
 # Delete the comment '#' symbol at the start of the next line and complete the code. 
 
-#visitors %>% count(_____)
+visitors %>% count(region)
+
 ```
 
 ### Exercise b.
@@ -47,7 +45,7 @@ _Create a frequency table by `admission` and `setting`._
 ```{r Ex_b}
 # Delete the comment '#' symbol at the start of the next line and complete the code.
 
-#visitors %>% count(_____, _____)
+visitors %>% count(admission, setting)
 ```
 
 
@@ -58,6 +56,7 @@ _What are the variable data types?_
 ```{r Q2_part1}
 class(visitors$n_2022)
 ```
+
 
 ```{r Q2_part2}
 visitors %>% summarise_all(class)
@@ -77,9 +76,9 @@ visitors %>% arrange(desc(n_2022))
 
 _What are the top 10 most visited attractions in 2021?_
 ```{r Ex_c}
-#visitors %>% 
-#  arrange(____(____)) %>%
-#  head(n = ____)
+visitors %>% 
+  arrange(desc(n_2021)) %>%
+  head(n = 10)
 ```
 
 ## Question 4
@@ -96,7 +95,7 @@ visitors %>% filter(attraction == "National Museum of Scotland")
 _Which attraction had exactly 565,772 visitors in 2022?_
 
 ```{r Ex_d}
-#visitors %>% filter(___ == ____)
+visitors %>% filter(n_2022 == 565772)
 ```
 
 ### Exercise e.
@@ -104,9 +103,9 @@ _Which attraction had exactly 565,772 visitors in 2022?_
 _How many attraction had more than 1 million visitors in 2022?_
 
 ```{r Ex_e}
-#visitors %>% 
-#  filter(____) %>%
-#  count()
+visitors %>% 
+  filter(n_2022 > 1000000) %>%
+  count()
 ```
 
 ## Question 5
@@ -129,11 +128,11 @@ visitors %>%
 _How many attractions had between 50,000 and 100,000 visitors in 2022?_
 
 ```{r Ex_f}
-#visitors %>% 
-#  ____(
-#    ______,
-#    ______ ) %>%
-#  count()
+visitors %>% 
+  filter(
+    n_2022 >= 50000,
+    n_2022 <= 100000) %>%
+  count()
 ```
 
 ### Exercise g.
@@ -141,9 +140,9 @@ _How many attractions had between 50,000 and 100,000 visitors in 2022?_
 _How many regions have more than 50 tourist attraction in the data set? (Hint: You will need to tabulate the data before filtering.)_
 
 ```{r Ex_g}
-#visitors %>% 
-#  _____(region) %>%
-#  filter(______)
+visitors %>% 
+  count(region) %>%
+  filter(n() > 50)
 ```
 
 
@@ -168,11 +167,11 @@ visitors %>%
 _Perform the same calculation for the 2021 admissions data._
 
 ```{r Ex_h}
-#visitors %>% 
-#  ______(
-#    __________,
-#    __________
-#  )
+visitors %>% 
+  summarise(
+    mean_2021 = mean(n_2021, na.rm = TRUE),
+    med_2021 = median(n_2021, na.rm = TRUE)
+  )
 ```
 
 All values in the output are `NA`!
@@ -183,7 +182,7 @@ _What does `NA` stand for and why are you getting this as your answer to the pre
 
 **Write your answer here**
 
-
+NA - Not Available, this value appears when data is missing or undefined.    
 
 
 ### Exercise j.
@@ -192,7 +191,11 @@ _Look at the help pages for the `mean()` and `median()` commands to see what the
 
 **Write your answer here**
 
-
+visitors %>% 
+  summarise(
+    mean_2021 = mean(n_2021, na.rm = TRUE),
+    med_2021 = median(n_2021, na.rm = TRUE)
+  )
 
 
 ## Question 7
@@ -214,7 +217,7 @@ _Observe in question 6 that the mean statistics across all settings are much lar
 
 **Write your answer here**
 
-
+This suggests that there might be some cases that contain significantly large values. since the mean is more sensitive to extremes cases this explains why the mean is significantly greater then the median.
 
 
 ## Question 8
@@ -245,8 +248,8 @@ _How many tourist attractions are there in each of the 4 nations? From this, dis
 
 
 ```{r Ex_l}
-#________ %>%
-#  ______(_______)
+visitors_with_nations %>%
+  count(nation)
 ```
 
 
@@ -260,6 +263,11 @@ _Within each of the 4 nations, what is the proportion of tourist attractions tha
 ```{r Ex_m}
 # Write your code here
 
+visitors_with_nations %>%
+  filter(admission == "Free") %>%
+    count(nation)
+    
+
 
 ```
 
@@ -271,6 +279,13 @@ _Calculate the percentage change in visitor admissions from 2021 to 2022. Of the
 ```{r Ex_n}
 # Write your code here
 
-
+visitors_with_nations %>%
+  filter(nation == "Scotland") %>%
+    summarise(
+      Total_In_2021 = sum(n_2021, na.rm = TRUE),
+      Total_In_2022 = sum(n_2022),
+      percentage_change = (Total_In_2022/Total_In_2021)*100
+    )
+  
 
 ```
